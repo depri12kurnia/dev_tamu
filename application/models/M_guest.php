@@ -109,4 +109,20 @@ class M_guest extends CI_Model
 
         return $this->db->get('guests')->result();
     }
+
+    // Untuk menampilkan data di dashboard
+    public function get_total_guest()
+    {
+        return $this->db->count_all('guests');
+    }
+
+    public function get_total_by_hadir($hadir)
+    {
+        return $this->db->where('is_checked_in', $hadir)->count_all_results('guests');
+    }
+
+    public function get_total_by_tidak($tidak)
+    {
+        return $this->db->where('is_checked_in', $tidak)->count_all_results('guests');
+    }
 }
