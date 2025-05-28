@@ -4,7 +4,7 @@
             <div class="card-header">
                 <h3 class="card-title">Master Data Guest</h3>
                 <a href="<?php echo base_url('admin/guest/export_excel') ?>" target="_blank" class="card-title btn btn-warning btn-sm float-right"><i class="fa fa-download"></i> Report</a>
-                <a href="<?php echo base_url('admin/guest/print_labels') ?>" target="_blank" class="card-title btn btn-primary btn-sm float-right"><i class="fa fa-print"></i> Print</a>
+                <!-- <a href="<?php echo base_url('admin/guest/print_labels') ?>" target="_blank" class="card-title btn btn-primary btn-sm float-right"><i class="fa fa-print"></i> Print</a> -->
                 <a href="<?php echo base_url('admin/guest/print_label_pdf') ?>" target="_blank" class="card-title btn btn-danger btn-sm float-right"><i class="fa fa-file-pdf"></i> Pdf</a>
                 <button class="card-title btn btn-default btn-sm float-right" onclick="import_guest()"><i class="fa fa-file-excel"></i> Import</a></button>
                 <button class="card-title btn btn-success btn-sm float-right" onclick="add_guest()"><i class="fa fa-plus"></i> Add</a></button>

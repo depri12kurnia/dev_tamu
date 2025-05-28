@@ -4,7 +4,7 @@
 <head>
     <style>
         @page {
-            size: 210mm 165mm;
+            size: 210mm 148mm;
             /* Ukuran kertas label */
             margin: 0;
         }
@@ -18,7 +18,9 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0mm 0mm;
+            /* jarak antar kolom: 4mm, baris: 0mm */
         }
 
         td {
@@ -28,11 +30,13 @@
             text-align: center;
             vertical-align: middle;
             box-sizing: border-box;
+            /* border: 1px dashed #999; */
         }
 
         img {
             width: 22mm;
             height: 22mm;
+            margin-top: 2mm;
         }
     </style>
 </head>

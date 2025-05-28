@@ -18,7 +18,10 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            /* border-collapse: collapse; */
+            border-collapse: separate;
+            border-spacing: 0mm 10mm;
+            /* jarak antar kolom: 4mm, baris: 0mm */
         }
 
         td {
@@ -33,6 +36,7 @@
         img {
             width: 22mm;
             height: 22mm;
+            margin-top: 10mm;
         }
     </style>
 </head>
