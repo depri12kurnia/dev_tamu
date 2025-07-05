@@ -95,6 +95,14 @@
                               </p>
                           </a>
                       </li>
+                      <li class="nav-item">
+                          <a href="<?php echo base_url('admin/sendmail'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'sendmail' ? 'active' : ''; ?>">
+                              <i class="nav-icon fas fa-envelope"></i>
+                              <p>
+                                  Sendmail
+                              </p>
+                          </a>
+                      </li>
 
                       <li class="nav-header">Administrator</li>
                       <li class="nav-item">
