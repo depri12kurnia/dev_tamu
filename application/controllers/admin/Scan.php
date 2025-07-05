@@ -10,6 +10,8 @@ class Scan extends CI_Controller
         $this->load->model('M_guest');
 
         $this->load->model('M_settings');
+        $this->load->model('M_log_user');
+
         if (!$this->ion_auth->logged_in()) {
             redirect('auth/login');
         }
@@ -40,19 +42,27 @@ class Scan extends CI_Controller
 
         $guest = $this->M_guest->get_by_qr($qr_code);
 
+        // Mendapatkan user yang login
+        $user = $this->ion_auth->user()->row();
+
         if ($guest) {
             // Update check-in
             $this->M_guest->checkin($qr_code);
 
+            // Menyimpan log aktivitas login
+            $this->M_log_user->save_log($user->id, 'Scan QRcode Berhasil' . $guest->name);
+
+            // Jika berhasil
             echo json_encode([
-                'status' => true,
-                'message' => 'Check-in sukses: ' . $guest->name . ' || Prodi: ' . $guest->prodi,
+                'status' => 'success',
+                'message' => 'QR berhasil diverifikasi!' . $guest->name,
                 'csrf_token' => $this->security->get_csrf_hash()
             ]);
         } else {
+            // Jika gagal
             echo json_encode([
-                'status' => false,
-                'message' => 'QR Code tidak ditemukan!',
+                'status' => 'error',
+                'message' => 'QR tidak valid!',
                 'csrf_token' => $this->security->get_csrf_hash()
             ]);
         }

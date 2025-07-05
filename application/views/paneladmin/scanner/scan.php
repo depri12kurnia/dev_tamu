@@ -22,9 +22,14 @@
         </div>
         <!-- /.row -->
     </div><!-- /.container-fluid -->
+    <audio id="sound-success" src="<?= base_url('public/sound/success.mp3') ?>" preload="auto"></audio>
+    <audio id="sound-error" src="<?= base_url('public/sound/failed.mp3') ?>" preload="auto"></audio>
 </section>
 
+<!-- QRcode -->
 <script src="https://unpkg.com/html5-qrcode"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <input type="hidden" id="csrf_token_name" value="<?= $csrf_token_name ?>">
 <input type="hidden" id="csrf_hash" value="<?= $csrf_hash ?>">
@@ -66,10 +71,33 @@
                         // ✅ Update token CSRF
                         document.getElementById("csrf_hash").value = data.csrf_token;
 
+                        // ✅ Play success or error sound
+                        if (data.status === 'success') {
+                            document.getElementById("sound-success").play();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: data.message,
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            document.getElementById("sound-error").play();
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: data.message,
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                        }
+
                         // 🔄 Restart scan setelah 2 detik
                         setTimeout(() => {
                             startScanner();
-                        }, 2000);
+                        }, 3000);
                     });
             },
             function onScanError(errorMessage) {

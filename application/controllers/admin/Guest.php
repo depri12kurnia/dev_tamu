@@ -11,6 +11,8 @@ class Guest extends CI_Controller
         $this->load->model('M_guest');
 
         $this->load->model('M_settings');
+        $this->load->model('M_log_user');
+
         if (!$this->ion_auth->logged_in()) {
             redirect('auth/login');
         }
@@ -99,9 +101,14 @@ class Guest extends CI_Controller
     public function ajax_manual_checkin()
     {
         $this->output->set_content_type('application/json');
+        // Mendapatkan user yang login
+        $user = $this->ion_auth->user()->row();
 
         $id = $this->input->post('id', TRUE);
         $success = $this->M_guest->manual_checkin($id);
+
+        // Menyimpan log aktivitas login
+        $this->M_log_user->save_log($user->id, 'Checkin Manual Berhasil');
 
         echo json_encode([
             'status' => $success,
