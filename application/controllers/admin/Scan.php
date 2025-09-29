@@ -15,7 +15,8 @@ class Scan extends CI_Controller
         if (!$this->ion_auth->logged_in()) {
             redirect('auth/login');
         }
-        if (!$this->ion_auth->in_group('admin')) {
+
+        if (!$this->ion_auth->in_group(['admin', 'members'])) {
             redirect('page_errors');
         }
 

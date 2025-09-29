@@ -98,19 +98,23 @@
                 type: "POST",
                 data: {
                     csrf_token_jkt3: getCsrfToken()
-                }, // Kirim CSRF token
-
-                dataType: "JSON",
+                },
+                dataType: "json",
                 success: function(data) {
-                    $('#modal_form').modal('hide');
-                    reload_table();
-
-                    // console.log("Token CSRF baru:", data.csrf_token); // Debug
-                    // Perbarui CSRF token setelah request berhasil
-                    document.cookie = "csrf_cookie_jkt3=" + data.csrf_token + "; path=/";
+                    if (data && data.status) {
+                        reload_table();
+                        // Perbarui CSRF token setelah request berhasil
+                        document.cookie = "csrf_cookie_jkt3=" + data.csrf_token + "; path=/";
+                    } else {
+                        alert('Failed to delete logs: ' + (data && data.message ? data.message : 'Unknown error'));
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Error deleting data');
+                    let msg = 'Error deleting data';
+                    if (jqXHR.responseText) {
+                        msg += ':\n' + jqXHR.responseText;
+                    }
+                    alert(msg);
                 }
             });
         }

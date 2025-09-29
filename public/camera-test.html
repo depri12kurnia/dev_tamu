@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        video {
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Camera Access Test</h1>
+
+    <div class="test-section">
+        <h3>Browser Information</h3>
+        <div id="browser-info"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Camera Support Test</h3>
+        <button class="btn-primary" onclick="testCameraSupport()">Test Camera Support</button>
+        <div id="camera-support-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Available Cameras</h3>
+        <button class="btn-success" onclick="getCameraList()">Get Camera List</button>
+        <div id="camera-list-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Camera Stream Test</h3>
+        <button class="btn-warning" onclick="testCameraStream()">Test Camera Stream</button>
+        <button class="btn-warning" onclick="stopCameraStream()">Stop Stream</button>
+        <div id="camera-stream-result"></div>
+        <video id="camera-preview" autoplay muted style="display: none;"></video>
+    </div>
+
+    <div class="test-section">
+        <h3>QR Scanner Test</h3>
+        <button class="btn-primary" onclick="testQRScanner()">Test QR Scanner</button>
+        <div id="qr-scanner-result"></div>
+        <div id="qr-reader" style="width: 100%; max-width: 500px;"></div>
+    </div>
+
+    <!-- Include html5-qrcode for QR testing -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <script>
+        let currentStream = null;
+        let html5QrCode = null;
+
+        // Display browser information
+        function displayBrowserInfo() {
+            const info = {
+                'User Agent': navigator.userAgent,
+                'Protocol': window.location.protocol,
+                'Host': window.location.host,
+                'Support getUserMedia': !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+                'Support enumerateDevices': !!(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices),
+                'HTTPS': window.location.protocol === 'https:'
+            };
+
+            let html = '<ul>';
+            for (const [key, value] of Object.entries(info)) {
+                html += `<li><strong>${key}:</strong> ${value}</li>`;
+            }
+            html += '</ul>';
+
+            document.getElementById('browser-info').innerHTML = html;
+        }
+
+        // Test camera support
+        function testCameraSupport() {
+            const resultDiv = document.getElementById('camera-support-result');
+
+            if (!navigator.mediaDevices) {
+                resultDiv.innerHTML = '<div class="status error">navigator.mediaDevices not supported</div>';
+                return;
+            }
+
+            if (!navigator.mediaDevices.getUserMedia) {
+                resultDiv.innerHTML = '<div class="status error">getUserMedia not supported</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="status success">Camera API is supported!</div>';
+        }
+
+        // Get camera list
+        async function getCameraList() {
+            const resultDiv = document.getElementById('camera-list-result');
+
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+                if (videoDevices.length === 0) {
+                    resultDiv.innerHTML = '<div class="status warning">No camera devices found</div>';
+                    return;
+                }
+
+                let html = '<div class="status success">Found ' + videoDevices.length + ' camera(s):</div><ul>';
+                videoDevices.forEach((device, index) => {
+                    html += `<li><strong>Camera ${index + 1}:</strong> ${device.label || 'Unknown Camera'} (ID: ${device.deviceId})</li>`;
+                });
+                html += '</ul>';
+
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="status error">Error getting camera list: ${error.message}</div>`;
+            }
+        }
+
+        // Test camera stream
+        async function testCameraStream() {
+            const resultDiv = document.getElementById('camera-stream-result');
+            const video = document.getElementById('camera-preview');
+
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: "environment"
+                    },
+                    audio: false
+                };
+
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = currentStream;
+                video.style.display = 'block';
+
+                resultDiv.innerHTML = '<div class="status success">Camera stream started successfully!</div>';
+            } catch (error) {
+                let errorMessage = `Error accessing camera: ${error.message}`;
+
+                if (error.name === 'NotAllowedError') {
+                    errorMessage += '<br><strong>Solution:</strong> Please allow camera access in browser settings.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage += '<br><strong>Solution:</strong> No camera device found.';
+                } else if (error.name === 'NotSupportedError') {
+                    errorMessage += '<br><strong>Solution:</strong> Camera not supported. Try using HTTPS.';
+                }
+
+                resultDiv.innerHTML = `<div class="status error">${errorMessage}</div>`;
+            }
+        }
+
+        // Stop camera stream
+        function stopCameraStream() {
+            const video = document.getElementById('camera-preview');
+            const resultDiv = document.getElementById('camera-stream-result');
+
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+                video.style.display = 'none';
+                resultDiv.innerHTML = '<div class="status warning">Camera stream stopped.</div>';
+            }
+        }
+
+        // Test QR Scanner
+        async function testQRScanner() {
+            const resultDiv = document.getElementById('qr-scanner-result');
+
+            try {
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("qr-reader");
+                }
+
+                const cameras = await Html5Qrcode.getCameras();
+
+                if (cameras.length === 0) {
+                    resultDiv.innerHTML = '<div class="status error">No cameras found for QR scanning</div>';
+                    return;
+                }
+
+                const config = {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                };
+
+                await html5QrCode.start(
+                    cameras[cameras.length - 1].id, // Use last camera (usually back camera)
+                    config,
+                    (qrCodeMessage) => {
+                        resultDiv.innerHTML = `<div class="status success">QR Code detected: ${qrCodeMessage}</div>`;
+                        html5QrCode.stop();
+                    },
+                    (errorMessage) => {
+                        // Silent error handling
+                    }
+                );
+
+                resultDiv.innerHTML = '<div class="status success">QR Scanner started! Point camera at QR code.</div>';
+
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="status error">QR Scanner error: ${error.message}</div>`;
+            }
+        }
+
+        // Initialize page
+        window.onload = function () {
+            displayBrowserInfo();
+        };
+    </script>
+</body>
+
+</html>

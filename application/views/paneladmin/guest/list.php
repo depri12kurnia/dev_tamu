@@ -8,6 +8,7 @@
                 <a href="<?php echo base_url('admin/guest/print_label_pdf') ?>" target="_blank" class="card-title btn btn-danger btn-sm float-right"><i class="fa fa-file-pdf"></i> Pdf</a>
                 <button class="card-title btn btn-default btn-sm float-right" onclick="import_guest()"><i class="fa fa-file-excel"></i> Import</a></button>
                 <button class="card-title btn btn-success btn-sm float-right" onclick="add_guest()"><i class="fa fa-plus"></i> Add</a></button>
+                <button class="card-title btn btn-warning btn-sm float-right" onclick="reset_status()"><i class="fa fa-undo"></i> Reset Status</a></button>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
@@ -361,5 +362,28 @@
 
     function reload_table() {
         table.ajax.reload(null, false);
+    }
+
+    function reset_status() {
+        if (!confirm("Apakah Anda yakin ingin mereset status semua tamu ke belum hadir?")) return;
+
+        $.ajax({
+            url: "<?php echo site_url('admin/guest/reset_status') ?>",
+            type: "POST",
+            data: {
+                csrf_token_jkt3: getCsrfToken()
+            },
+            dataType: "JSON",
+            success: function(res) {
+                alert(res.message);
+                // update token
+                $('input[name="csrf_token_jkt3"]').val(res.csrf_token);
+                document.cookie = "csrf_cookie_jkt3=" + res.csrf_token + "; path=/";
+                reload_table();
+            },
+            error: function() {
+                alert("Gagal mereset status.");
+            }
+        });
     }
 </script>

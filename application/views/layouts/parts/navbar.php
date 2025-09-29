@@ -67,6 +67,25 @@
               <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                   <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
+                  <?php if ($this->ion_auth->in_group('members')) {  ?>
+                      <li class="nav-item">
+                          <a href="<?php echo base_url('admin/dashboard'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'dashboard' ? 'active' : ''; ?>">
+                              <i class="nav-icon fas fa-tachometer-alt"></i>
+                              <p>
+                                  Dashboard
+                              </p>
+                          </a>
+                      </li>
+                      <li class="nav-header">Scan</li>
+                      <li class="nav-item">
+                          <a href="<?php echo base_url('admin/scan'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'scan' ? 'active' : ''; ?>">
+                              <i class="nav-icon fas fa-qrcode"></i>
+                              <p>
+                                  Scan Barcode
+                              </p>
+                          </a>
+                      </li>
+                  <?php } ?>
                   <!-- Akses Administrator -->
                   <?php if ($this->ion_auth->in_group('admin')) {  ?>
                       <li class="nav-item">
@@ -82,7 +101,7 @@
                           <a href="<?php echo base_url('admin/scan'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'scan' ? 'active' : ''; ?>">
                               <i class="nav-icon fas fa-qrcode"></i>
                               <p>
-                                  Scan
+                                  Scan Barcode
                               </p>
                           </a>
                       </li>

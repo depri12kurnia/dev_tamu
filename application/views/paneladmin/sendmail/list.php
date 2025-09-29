@@ -98,4 +98,25 @@
     function reload_table() {
         table.ajax.reload(null, false);
     }
+
+    function sendMail(email) {
+        if (confirm('Kirim undangan ke ' + email + '?')) {
+            $.ajax({
+                url: "<?php echo site_url('admin/sendmail/send_email') ?>",
+                type: "POST",
+                data: {
+                    email: email,
+                    csrf_token_jkt3: getCsrfToken()
+                },
+                dataType: "json",
+                success: function(data) {
+                    alert(data.message);
+                    reload_table();
+                },
+                error: function(jqXHR) {
+                    alert('Gagal mengirim email');
+                }
+            });
+        }
+    }
 </script>

@@ -75,4 +75,9 @@ class M_sendmail extends CI_Model
             'is_sendmail_time' => date('Y-m-d H:i:s')
         ]);
     }
+
+    public function get_by_email($email)
+    {
+        return $this->db->get_where('guests', ['email' => $email])->row();
+    }
 }

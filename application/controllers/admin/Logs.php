@@ -72,6 +72,11 @@ class Logs extends CI_Controller
     public function delete_all_logs()
     {
         $deleted_rows = $this->M_log->delete_all_logs();
-        echo "Deleted $deleted_rows old log(s)";
+        // Kirim response JSON dan CSRF token baru
+        echo json_encode([
+            'status' => true,
+            'deleted' => $deleted_rows,
+            'csrf_token' => $this->security->get_csrf_hash()
+        ]);
     }
 }

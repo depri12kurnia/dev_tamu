@@ -125,4 +125,11 @@ class M_guest extends CI_Model
     {
         return $this->db->where('is_checked_in', $tidak)->count_all_results('guests');
     }
+
+    public function reset_status_all()
+    {
+        $this->db->set('is_checked_in', 0);
+        $this->db->set('is_checked_time', null);
+        $this->db->update('guests');
+    }
 }

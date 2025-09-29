@@ -331,4 +331,18 @@ class Guest extends CI_Controller
 
         force_download('laporan_tamu.xls', $content);
     }
+
+    public function reset_status()
+    {
+        $this->validate_csrf();
+
+        // Reset semua tamu ke status belum hadir
+        $this->M_guest->reset_status_all();
+
+        echo json_encode([
+            "status" => TRUE,
+            "message" => "Status semua tamu berhasil direset ke belum hadir.",
+            "csrf_token" => $this->security->get_csrf_hash()
+        ]);
+    }
 }
